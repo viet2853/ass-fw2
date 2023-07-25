@@ -12,6 +12,7 @@ export const getAll = async (req, res) => {
     sortBy = "createdAt",
     orderBy = "asc",
     s,
+    categoryId,
   } = req.query;
   const skip = (+page - 1) * +limit;
   const textS = (s as string)?.trim();
@@ -19,6 +20,11 @@ export const getAll = async (req, res) => {
   if (textS) {
     condition.push({
       $or: [{ name: { $regex: String(textS), $options: "i" } }],
+    });
+  }
+  if (categoryId) {
+    condition.push({
+      categoryId: categoryId,
     });
   }
   const data = await Product.find(

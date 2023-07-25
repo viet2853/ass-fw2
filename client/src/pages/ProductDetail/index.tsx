@@ -1,4 +1,4 @@
-import { Card, Col, Divider, Row, Typography } from "antd";
+import { Card, Carousel, Col, Divider, Row, Typography } from "antd";
 import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProduct, getProducts } from "../../api/product.api";
@@ -17,25 +17,29 @@ export default function ProductDetail() {
         const { data } = await getProduct(id);
         setProduct(data.data as TProduct);
         const { data: dataProductsSimilar } = await getProducts({
-          _categoryId: data.data?.categoryId,
+          categoryId: data.data?.categoryId,
         });
         setSimilarProducts(
-          (dataProductsSimilar.data?.docs as TProduct[]).filter(
-            (p) => p._id !== id
-          )
+          (dataProductsSimilar.data as TProduct[]).filter((p) => p._id !== id)
         );
       }
     })();
   }, [id]);
   return (
     <>
-      <Row gutter={12}>
+      <Row gutter={24}>
         {product && (
           <>
-            <Col span={12}>
-              <img width="100%" src={product.image} />
+            <Col span={10}>
+              <Carousel>
+                {product?.images?.length > 0
+                  ? product.images.map((img) => (
+                      <img key={img} width="100%" src={img} />
+                    ))
+                  : ""}
+              </Carousel>
             </Col>
-            <Col span={12}>
+            <Col span={14}>
               <Title level={3}>{product.name}</Title>
               <Title level={4}>Giá: {product.price}</Title>
               <Divider>
@@ -63,7 +67,7 @@ export default function ProductDetail() {
                       height={300}
                       style={{ objectFit: "cover" }}
                       alt={product.name}
-                      src={product.image}
+                      src={product.images[0]}
                     />
                   }
                 >

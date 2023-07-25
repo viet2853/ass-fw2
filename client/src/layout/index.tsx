@@ -5,7 +5,7 @@ import { clearLocalStorage, getProfileFromLS } from "../utils";
 import { TUser } from "../@types/auth.type";
 
 const layoutStyle: React.CSSProperties = {
-  maxWidth: "1200px",
+  maxWidth: "1400px",
   margin: "0 auto",
 };
 
@@ -38,7 +38,7 @@ export default function MainLayout({
           <Col span={4}>
             <Link to="/">
               <Title style={{ margin: 0 }} level={3}>
-                VIETNT
+                NHÓM 4
               </Title>
             </Link>
           </Col>
@@ -76,7 +76,9 @@ export default function MainLayout({
       </Header>
       <Content style={contentStyle}>{children}</Content>
       <Footer>
-        <Title level={5}>VIETNT</Title>
+        <Title style={{ textAlign: "center" }} level={5}>
+          NHÓM 4
+        </Title>
       </Footer>
     </Layout>
   );

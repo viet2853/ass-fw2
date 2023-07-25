@@ -61,7 +61,7 @@ export default function AdminLayout({
       >
         <Link to="/">
           <Title style={{ color: "#fff", margin: 0 }} level={3}>
-            VIETNT
+            NHÓM 4
           </Title>
         </Link>
         <Button

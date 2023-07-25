@@ -33,9 +33,9 @@ export default function Login() {
       if (!data.data) return;
       setProfileToLS(data.data);
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
-        message: (error as TResError).message,
+        message: error.response.data.message || error.message,
       });
     }
   };

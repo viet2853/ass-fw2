@@ -23,9 +23,9 @@ export default function Register() {
     try {
       await register({ name, email, password, confirmPassword });
       navigate("/signin");
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
-        message: (error as TResError).message,
+        message: error.response.data.message || error.message,
       });
     }
   };
