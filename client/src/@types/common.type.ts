@@ -5,7 +5,7 @@ export type TResSuccess<T> = {
 
 export type TResListSuccess<T> = {
   message: string;
-  data?: T;
+  data: T;
   total?: number;
 };
 

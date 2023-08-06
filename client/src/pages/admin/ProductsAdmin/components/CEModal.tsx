@@ -3,22 +3,23 @@ import React, { useEffect } from "react";
 import { TProduct } from "../../../../@types/product.type";
 import { getCategories } from "../../../../api/category.api";
 import { TCategory } from "../../../../@types/category.type";
-import { createProduct, updateProduct } from "../../../../api/product.api";
 import InputUploadGallery from "./InputFile";
+import {
+  useAddProductMutation,
+  useUpdateProductMutation,
+} from "../products.service";
 
 type IProps = {
   productEdit?: TProduct | null;
   setProductEdit: React.Dispatch<React.SetStateAction<TProduct | null>>;
   isOpenCEModal: boolean;
   setIsOpenCEModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setProducts: React.Dispatch<React.SetStateAction<TProduct[] | undefined>>;
 };
 export default function CEModal({
   isOpenCEModal,
   setIsOpenCEModal,
   setProductEdit,
   productEdit,
-  setProducts,
 }: IProps) {
   const [form] = Form.useForm();
   const [categories, setCategories] = React.useState<TCategory[]>([]);
@@ -37,7 +38,7 @@ export default function CEModal({
       categoryId: productEdit?.categoryId,
       images: productEdit?.images,
     });
-  }, [productEdit]);
+  }, [productEdit?._id]);
 
   const onClose = () => {
     form.resetFields();
@@ -45,29 +46,17 @@ export default function CEModal({
     setIsOpenCEModal(false);
   };
 
-  const onFinish = (values: any) => {
+  const [update] = useUpdateProductMutation();
+  const [add] = useAddProductMutation();
+
+  const onFinish = async (values: any) => {
+    console.log("🚀 ~ file: CEModal.tsx:54 ~ onFinish ~ values:", values);
     if (productEdit) {
-      (async () => {
-        const { data } = await updateProduct(productEdit._id, values);
-        setProducts((prev) => {
-          return prev?.map((product) => {
-            if (product._id === productEdit._id) {
-              return { ...product, ...values };
-            }
-            return product;
-          });
-        });
-        notification.success({ message: data.message });
-      })();
+      await update({ id: productEdit._id, body: values });
+      notification.success({ message: "Update Product Sucess" });
     } else {
-      (async () => {
-        const { data } = await createProduct(values);
-        console.log("🚀 ~ file: CEModal.tsx:65 ~ data:", data);
-        setProducts((prev) => {
-          return [data.data, ...(prev as any)];
-        });
-        notification.success({ message: data.message });
-      })();
+      await add(values);
+      notification.success({ message: "Add ProductSucess" });
     }
     onClose();
   };

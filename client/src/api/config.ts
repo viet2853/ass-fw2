@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getProfileFromLS } from "../utils";
+import { fetchBaseQuery } from "@reduxjs/toolkit/dist/query";
 
 export const baseURL = "http://localhost:8080/api";
 
@@ -21,5 +22,27 @@ instance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+export const baseCreateApi = ({
+  reducerPath,
+  tagTypes,
+}: {
+  reducerPath: string;
+  tagTypes: string[];
+}) => {
+  const accessToken = getProfileFromLS()?.accessToken || "";
+  return {
+    reducerPath, // Tên field trong Redux state
+    tagTypes, // Những kiểu tag cho phép dùng trong blogApi
+    keepUnusedDataFor: 10, // Giữ data trong 10s sẽ xóa (mặc định 60s)
+    baseQuery: fetchBaseQuery({
+      baseUrl: "http://localhost:8080/api",
+      prepareHeaders(headers) {
+        headers.set("authorization", `Bearer ${accessToken}`);
+        return headers;
+      },
+    }),
+  };
+};
 
 export default instance;

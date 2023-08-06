@@ -23,6 +23,10 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { TResError } from "../../../@types/common.type";
 import CEModal from "./components/CEModal";
+import {
+  useGetProductsQuery,
+  useDeleteProductMutation,
+} from "./products.service";
 
 const baseQueryParams = {
   page: 1,
@@ -32,33 +36,21 @@ const baseQueryParams = {
 };
 
 export default function ProductsAdmin() {
-  const [products, setProducts] = React.useState<TProduct[] | undefined>([]);
-  const [total, setTotal] = React.useState<number | undefined>(0);
   const [params, setParams] =
     React.useState<TQueryParamsProduct>(baseQueryParams);
   const [isOpenCEModal, setIsOpenCEModal] = React.useState(false);
   const [productEdit, setProductEdit] = React.useState<TProduct | null>(null);
 
-  useEffect(() => {
-    const fetchAllProduct = async () => {
-      const {
-        data: { data, total },
-      } = await getProducts(params);
-      setProducts(data);
-      setTotal(total);
-    };
-    fetchAllProduct();
-  }, [params]);
+  const { data } = useGetProductsQuery(params);
+  const listProduct = data?.data;
+  const total = data?.total;
 
+  const [mutate] = useDeleteProductMutation();
   const handleDelete = async (id: string) => {
-    try {
-      const { data } = await deleteProduct(id);
-      setProducts(products && products.filter((product) => product._id !== id));
-      notification.success({ message: data.message });
-    } catch (error) {
-      notification.error({ message: (error as TResError).message });
-    }
+    await mutate(id);
+    notification.success({ message: "Delete Product Sucess" });
   };
+
   const columns: ColumnsType<TProduct> = [
     {
       title: "Name",
@@ -141,7 +133,6 @@ export default function ProductsAdmin() {
   const handleChange = (pagination: any, filters: any, sorter: any) => {
     const { current, pageSize } = pagination;
     const { order, field } = sorter;
-    console.log("🚀 ~ file: index.tsx:144 ~ handleChange ~ sorter:", sorter);
     const page = current;
     const limit = pageSize;
     const sort = field;
@@ -183,7 +174,7 @@ export default function ProductsAdmin() {
           pageSizeOptions: ["4", "8", "12"],
         }}
         onChange={handleChange}
-        dataSource={products}
+        dataSource={listProduct}
         columns={columns}
       />
       <CEModal
@@ -191,7 +182,6 @@ export default function ProductsAdmin() {
         setIsOpenCEModal={setIsOpenCEModal}
         setProductEdit={setProductEdit}
         productEdit={productEdit}
-        setProducts={setProducts}
       />
     </div>
   );
